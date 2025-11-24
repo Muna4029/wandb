@@ -137,8 +137,6 @@ __all__ = [
     "RegistryFragment",
     "RegistryRoleFragment",
     "RunInfoFragment",
-    "RunInputArtifactConnectionFragment",
-    "RunOutputArtifactConnectionFragment",
     "SourceCollectionInfoFragment",
     "TagFragment",
     "TeamFragment",
@@ -146,7 +144,6 @@ __all__ = [
     "TeamRegistryMemberFragment",
     "TypeInfoFragment",
     "UserRegistryMemberFragment",
-    "VersionedArtifactConnectionFragment",
     "ArtifactCollectionState",
     "ArtifactCollectionType",
     "ArtifactState",
@@ -199,8 +196,6 @@ from .fragments import (
     RegistryFragment,
     RegistryRoleFragment,
     RunInfoFragment,
-    RunInputArtifactConnectionFragment,
-    RunOutputArtifactConnectionFragment,
     SourceCollectionInfoFragment,
     TagFragment,
     TeamFragment,
@@ -208,7 +203,6 @@ from .fragments import (
     TeamRegistryMemberFragment,
     TypeInfoFragment,
     UserRegistryMemberFragment,
-    VersionedArtifactConnectionFragment,
 )
 from .input_types import (
     AddAliasesInput,

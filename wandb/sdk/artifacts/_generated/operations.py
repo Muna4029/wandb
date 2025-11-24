@@ -234,9 +234,9 @@ mutation DeleteArtifactCollectionTags($input: DeleteArtifactCollectionTagAssignm
 """
 
 PROJECT_ARTIFACT_COLLECTIONS_GQL = """
-query ProjectArtifactCollections($entity: String!, $project: String!, $artifactType: String!, $cursor: String, $perPage: Int) {
-  project(name: $project, entityName: $entity) {
-    artifactType(name: $artifactType) {
+query ProjectArtifactCollections($entity: String!, $project: String!, $type: String!, $cursor: String, $perPage: Int) {
+  project(entityName: $entity, name: $project) {
+    artifactType(name: $type) {
       artifactCollections(after: $cursor, first: $perPage) {
         totalCount
         pageInfo {
@@ -295,9 +295,9 @@ fragment TagFragment on Tag {
 """
 
 PROJECT_ARTIFACT_COLLECTION_GQL = """
-query ProjectArtifactCollection($entity: String!, $project: String!, $artifactType: String!, $name: String!) {
-  project(name: $project, entityName: $entity) {
-    artifactType(name: $artifactType) {
+query ProjectArtifactCollection($entity: String!, $project: String!, $type: String!, $name: String!) {
+  project(entityName: $entity, name: $project) {
+    artifactType(name: $type) {
       artifactCollection(name: $name) {
         __typename
         ...ArtifactCollectionFragment
@@ -372,9 +372,9 @@ fragment PageInfoFragment on PageInfo {
 """
 
 ARTIFACT_VERSION_FILES_GQL = """
-query ArtifactVersionFiles($entity: String!, $project: String!, $artifactType: String!, $name: String!, $fileNames: [String!], $cursor: String, $perPage: Int = 50) {
+query ArtifactVersionFiles($entity: String!, $project: String!, $type: String!, $name: String!, $fileNames: [String!], $cursor: String, $perPage: Int = 50) {
   project(name: $project, entityName: $entity) {
-    artifactType(name: $artifactType) {
+    artifactType(name: $type) {
       artifact(name: $name) {
         files(names: $fileNames, after: $cursor, first: $perPage) {
           pageInfo {
@@ -551,9 +551,9 @@ fragment PageInfoFragment on PageInfo {
 """
 
 PROJECT_ARTIFACT_TYPE_GQL = """
-query ProjectArtifactType($entity: String!, $project: String!, $artifactType: String!) {
-  project(name: $project, entityName: $entity) {
-    artifactType(name: $artifactType) {
+query ProjectArtifactType($entity: String!, $project: String!, $type: String!) {
+  project(entityName: $entity, name: $project) {
+    artifactType(name: $type) {
       ...ArtifactTypeFragment
     }
   }
@@ -569,13 +569,22 @@ fragment ArtifactTypeFragment on ArtifactType {
 """
 
 PROJECT_ARTIFACTS_GQL = """
-query ProjectArtifacts($project: String!, $entity: String!, $type: String!, $collection: String!, $cursor: String, $perPage: Int = 50, $order: String, $filters: JSONString, $includeAliases: Boolean = true) {
-  project(name: $project, entityName: $entity) {
+query ProjectArtifacts($entity: String!, $project: String!, $type: String!, $collection: String!, $cursor: String, $perPage: Int = 50, $order: String, $filters: JSONString, $includeAliases: Boolean = true) {
+  project(entityName: $entity, name: $project) {
     artifactType(name: $type) {
       artifactCollection(name: $collection) {
         __typename
-        artifacts(filters: $filters, after: $cursor, first: $perPage, order: $order) {
-          ...VersionedArtifactConnectionFragment
+        artifacts(after: $cursor, first: $perPage, order: $order, filters: $filters) {
+          totalCount
+          pageInfo {
+            ...PageInfoFragment
+          }
+          edges {
+            version
+            node {
+              ...ArtifactFragment
+            }
+          }
         }
       }
     }
@@ -655,27 +664,22 @@ fragment TagFragment on Tag {
   id
   name
 }
-
-fragment VersionedArtifactConnectionFragment on VersionedArtifactConnection {
-  totalCount
-  pageInfo {
-    ...PageInfoFragment
-  }
-  edges {
-    node {
-      ...ArtifactFragment
-    }
-    version
-  }
-}
 """
 
 RUN_OUTPUT_ARTIFACTS_GQL = """
-query RunOutputArtifacts($entity: String!, $project: String!, $runName: String!, $cursor: String, $perPage: Int, $includeAliases: Boolean = true) {
-  project(name: $project, entityName: $entity) {
-    run(name: $runName) {
+query RunOutputArtifacts($entity: String!, $project: String!, $run: String!, $cursor: String, $perPage: Int, $includeAliases: Boolean = true) {
+  project(entityName: $entity, name: $project) {
+    run(name: $run) {
       artifacts: outputArtifacts(after: $cursor, first: $perPage) {
-        ...RunOutputArtifactConnectionFragment
+        totalCount
+        pageInfo {
+          ...PageInfoFragment
+        }
+        edges {
+          node {
+            ...ArtifactFragment
+          }
+        }
       }
     }
   }
@@ -738,18 +742,6 @@ fragment ProjectInfoFragment on Project {
   name
   entity {
     name
-  }
-}
-
-fragment RunOutputArtifactConnectionFragment on ArtifactConnection {
-  totalCount
-  pageInfo {
-    ...PageInfoFragment
-  }
-  edges {
-    node {
-      ...ArtifactFragment
-    }
   }
 }
 
@@ -769,11 +761,19 @@ fragment TagFragment on Tag {
 """
 
 RUN_INPUT_ARTIFACTS_GQL = """
-query RunInputArtifacts($entity: String!, $project: String!, $runName: String!, $cursor: String, $perPage: Int, $includeAliases: Boolean = true) {
-  project(name: $project, entityName: $entity) {
-    run(name: $runName) {
+query RunInputArtifacts($entity: String!, $project: String!, $run: String!, $cursor: String, $perPage: Int, $includeAliases: Boolean = true) {
+  project(entityName: $entity, name: $project) {
+    run(name: $run) {
       artifacts: inputArtifacts(after: $cursor, first: $perPage) {
-        ...RunInputArtifactConnectionFragment
+        totalCount
+        pageInfo {
+          ...PageInfoFragment
+        }
+        edges {
+          node {
+            ...ArtifactFragment
+          }
+        }
       }
     }
   }
@@ -836,18 +836,6 @@ fragment ProjectInfoFragment on Project {
   name
   entity {
     name
-  }
-}
-
-fragment RunInputArtifactConnectionFragment on InputArtifactConnection {
-  totalCount
-  pageInfo {
-    ...PageInfoFragment
-  }
-  edges {
-    node {
-      ...ArtifactFragment
-    }
   }
 }
 

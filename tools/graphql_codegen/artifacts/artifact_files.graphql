@@ -15,14 +15,14 @@ fragment FileFragment on File {
 query ArtifactVersionFiles(
   $entity: String!
   $project: String!
-  $artifactType: String!
+  $type: String!
   $name: String!
   $fileNames: [String!]
   $cursor: String
   $perPage: Int = 50
 ) {
   project(name: $project, entityName: $entity) {
-    artifactType(name: $artifactType) {
+    artifactType(name: $type) {
       artifact(name: $name) {
         files(names: $fileNames, after: $cursor, first: $perPage) {
           pageInfo {

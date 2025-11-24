@@ -217,7 +217,7 @@ class ArtifactType:
         gql_vars = {
             "entity": self.entity,
             "project": self.project,
-            "artifactType": self.type,
+            "type": self.type,
         }
         data = self.client.execute(gql_op, variable_values=gql_vars)
         result = ProjectArtifactType.model_validate(data)
@@ -302,7 +302,7 @@ class ArtifactCollections(
         self.entity = entity
         self.project = project
         self.type_name = type_name
-        variables = {"entity": entity, "project": project, "artifactType": type_name}
+        variables = {"entity": entity, "project": project, "type": type_name}
         super().__init__(client, variables=variables, per_page=per_page)
 
     @override
@@ -449,7 +449,7 @@ class ArtifactCollection:
         gql_vars = {
             "entity": entity,
             "project": project,
-            "artifactType": artifact_type,
+            "type": artifact_type,
             "name": name,
         }
         data = self.client.execute(gql_op, variable_values=gql_vars)
@@ -731,8 +731,8 @@ class Artifacts(SizedRelayPaginator["ArtifactFragment", "Artifact"]):
         self.tags = always_list(tags or [])
         self.order = order
         variables = {
-            "project": self.project,
             "entity": self.entity,
+            "project": self.project,
             "order": self.order,
             "type": self.type,
             "collection": self.collection_name,
@@ -820,7 +820,7 @@ class RunArtifacts(SizedRelayPaginator["ArtifactFragment", "Artifact"]):
             self.QUERY = gql_compat(query_str, omit_fields=omit_artifact_fields(client))
 
         self.run = run
-        variables = {"entity": run.entity, "project": run.project, "runName": run.id}
+        variables = {"entity": run.entity, "project": run.project, "run": run.id}
         super().__init__(client, variables=variables, per_page=per_page)
 
     @override
@@ -892,7 +892,7 @@ class ArtifactFiles(SizedRelayPaginator["FileFragment", "File"]):
                 "entity": artifact.source_entity,
                 "project": artifact.source_project,
                 "name": artifact.source_name,
-                "artifactType": artifact.type,
+                "type": artifact.type,
                 "fileNames": names,
             }
 
