@@ -9,6 +9,7 @@ try:
 except ModuleNotFoundError:
     from ultralytics.utils import RANK
     from ultralytics.utils.torch_utils import get_flops, get_num_params
+
 from ultralytics.yolo.v8.classify.train import ClassificationTrainer
 
 import wandb
